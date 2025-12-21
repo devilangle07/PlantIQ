@@ -1,11 +1,272 @@
+
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <title>PlantIQ</title>
-  </head>
-  <body>
-    <h1>Hello, PlantIQ is live </h1>
-    <p>This is my first app.</p>
-  </body>
-</html>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            background-color: #121212; /* Dark grey background */
+            color: #FFFFFF; /* White text */
+        }
 
+        .header {
+            background-color: #1E1E1E; /* Slightly lighter grey for the header */
+            color: #FFFFFF; /* White text */
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #333;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropbtn {
+            background-color: transparent;
+            color: #FFFFFF;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            left: 0;
+            background-color: #1E1E1E;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        .dropdown-content a {
+            color: #FFFFFF;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .dropdown-content a:hover {background-color: #333;}
+
+        .dropdown:hover .dropdown-content {display: block;}
+
+        #iot-data {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .sensor-card {
+            background-color: #1E1E1E;
+            color: #FFFFFF;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .sensor-card h2 {
+            margin-top: 0;
+            font-size: 20px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+        }
+
+        .sensor-card p {
+            font-size: 16px;
+        }
+
+        #connection-status {
+            text-align: center;
+            padding: 10px;
+            color: #AAAAAA;
+        }
+
+        #settings,
+        #profile,
+        #records {
+            margin: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #1E1E1E;
+            color: #FFFFFF;
+            display: none; /* Hidden by default */
+        }
+
+        /* Login Modal Styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1001; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+
+        .modal-content {
+            background-color: #1E1E1E;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #333;
+            width: 80%;
+            max-width: 400px;
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .close-button {
+            color: #aaa;
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        input[type="email"], input[type="password"] {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #333;
+            border-radius: 4px;
+            box-sizing: border-box;
+            background-color: #333;
+            color: white;
+        }
+
+        button {
+            background-color: #4CAF50; /* Green */
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+
+    </style>
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+
+</head>
+<body>
+
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Login or Sign Up</h2>
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <button id="login-button">Login</button>
+            <button id="signup-button">Sign Up</button>
+            <button id="guest-button" class="close-button" style="position: relative; top: auto; right: auto; font-size: 16px;">Continue as Guest</button>
+        </div>
+    </div>
+
+    <div class="header">
+        <div class="dropdown">
+            <button class="dropbtn">☰</button>
+            <div class="dropdown-content">
+                <a href="#records" onclick="showSection('records')">📈 Records</a>
+                <a href="#settings" onclick="showSection('settings')">⚙️ Settings</a>
+                <a href="#profile" onclick="showSection('profile')">👤 Profile</a>
+            </div>
+        </div>
+        <h1>PlantIQ</h1>
+    </div>
+
+    <div id="connection-status">Connecting to the database...</div>
+    <div id="iot-data">
+    </div>
+
+    <div id="records">
+        <h2>Records</h2>
+        <div id="iot-data-records"></div>
+    </div>
+
+    <div id="settings">
+        <h2>Settings</h2>
+        <p>This is where your settings will go.</p>
+    </div>
+
+    <div id="profile">
+        <h2>Profile</h2>
+        <p>This is where your profile information will go.</p>
+    </div>
+
+    <script src="database.js"></script>
+    <script src="auth.js"></script>
+    <script src="user-database.js"></script>
+    <script>
+        function showSection(sectionId) {
+            document.getElementById('records').style.display = 'none';
+            document.getElementById('settings').style.display = 'none';
+            document.getElementById('profile').style.display = 'none';
+            document.getElementById(sectionId).style.display = 'block';
+        }
+
+        // Login Modal Logic
+        const loginModal = document.getElementById('login-modal');
+        const closeButtons = document.querySelectorAll('.close-button');
+        const loginButton = document.getElementById('login-button');
+        const signupButton = document.getElementById('signup-button');
+
+        window.onload = function() {
+            loginModal.style.display = 'block';
+        }
+
+        closeButtons.forEach(button => {
+            button.onclick = function() {
+                loginModal.style.display = 'none';
+            }
+        })
+
+        window.onclick = function(event) {
+            if (event.target == loginModal) {
+                loginModal.style.display = 'none';
+            }
+        }
+
+        loginButton.onclick = function() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            signIn(email, password);
+        }
+
+        signupButton.onclick = function() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            signUp(email, password);
+        }
+
+    </script>
+</body>
+</html>
