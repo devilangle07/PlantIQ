@@ -1,67 +1,144 @@
-
-// TODO: Replace with your project's customized Firebase snippet.
 const firebaseConfig = {
-  apiKey: "API_KEY",
-  authDomain: "PROJECT_ID.firebaseapp.com",
-  databaseURL: "https://PROJECT_ID.firebaseio.com",
-  projectId: "PROJECT_ID",
-  storageBucket: "PROJECT_ID.appspot.com",
-  messagingSenderId: "SENDER_ID",
-  appId: "APP_ID",
-};
+    apiKey: "API_KEY",
+    authDomain: "PROJECT_ID.firebaseapp.com",
+    databaseURL: "https://PROJECT_ID.firebaseio.com",
+    projectId: "PROJECT_ID",
+    storageBucket: "PROJECT_ID.appspot.com",
+    messagingSenderId: "SENDER_ID",
+    appId: "APP_ID",
+  };
 
-// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
-
-// Get a reference to the database service
 const database = firebase.database();
-
-// Get a reference to the 'iot-data' node
 const iotDataRef = database.ref('iot-data');
 
-// Display connection status
-const connectionStatus = document.getElementById('connection-status');
-const dbConnection = database.ref('.info/connected');
-dbConnection.on('value', (snap) => {
-  if (snap.val() === true) {
-    connectionStatus.innerHTML = 'Connected to the database.';
-  } else {
-    connectionStatus.innerHTML = 'Connection to the database failed.';
-  }
+// --- Plant Growth Images ---
+const plantGrowthStages = {
+    tree: [
+        "https://i.imgur.com/8z83Y7c.png",
+        "https://i.imgur.com/0I04Tz6.png",
+        "https://i.imgur.com/2oV3o7c.png",
+        "https://i.imgur.com/2OKL7Jg.png",
+        "https://i.imgur.com/Z5gJ1p0.png"
+    ],
+    shrub: [
+        "https://i.imgur.com/8z83Y7c.png",
+        "https://i.imgur.com/0I04Tz6.png",
+        "https://i.imgur.com/v8Na3y9.png",
+        "https://i.imgur.com/Uo2wS4c.png",
+    ]
+};
+
+// --- Core App State ---
+let growthScore = 0;
+let currentPlantType = 'tree';
+let currentData = { temp: null, moisture: null, ph: null };
+
+// --- UI Elements ---
+const growthScoreEl = document.getElementById('growth-score');
+const plantImageEl = document.getElementById('plant-image');
+const tempLogEl = document.getElementById('temp-log');
+const moistureLogEl = document.getElementById('moisture-log');
+const phLogEl = document.getElementById('ph-log');
+const alertEl = document.getElementById('smart-alerts');
+const plantTypeSelector = document.getElementById('plant-type-selector');
+
+// --- Chart.js Setup ---
+const ctx = document.getElementById('data-chart').getContext('2d');
+const dataChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: [],
+        datasets: [
+            { label: 'Temperature', data: [], borderColor: '#c97c5d', fill: false }
+        ]
+    },
+    options: {
+        scales: {
+            y: { beginAtZero: false, ticks: { color: '#5d4037' }, grid: { color: '#d2b48c' } },
+            x: { ticks: { color: '#5d4037' }, grid: { color: '#d2b48c' } }
+        },
+        plugins: { legend: { labels: { color: '#5d4037' } } }
+    }
 });
 
-// Get the iot-data containers
-const iotDataContainer = document.getElementById('iot-data');
-const iotDataRecordsContainer = document.getElementById('iot-data-records');
+// --- Event Listeners ---
+plantTypeSelector.addEventListener('change', (e) => {
+    currentPlantType = e.target.value;
+    growthScore = 0;
+    updatePlantVisual();
+});
 
-function createSensorCard(sensor) {
-    const sensorCard = document.createElement('div');
-    sensorCard.classList.add('sensor-card');
+// --- Main Data Processing Loop ---
+iotDataRef.on('value', (snapshot) => {
+    const data = snapshot.val();
+    processData(data);
+    updateChart();
+    runAI();
+});
 
-    const sensorName = document.createElement('h2');
-    sensorName.textContent = sensor.name;
-    sensorCard.appendChild(sensorName);
+function processData(data) {
+    currentData.temp = data.temperature?.value || currentData.temp;
+    currentData.moisture = data.moisture?.value || currentData.moisture;
+    currentData.ph = data.ph?.value || currentData.ph;
 
-    const sensorValue = document.createElement('p');
-    sensorValue.textContent = `${sensor.value} ${sensor.unit}`;
-    sensorCard.appendChild(sensorValue);
-    
-    return sensorCard;
+    tempLogEl.textContent = `TEMP: ${currentData.temp}°C`;
+    moistureLogEl.textContent = `MOIST: ${currentData.moisture}%`;
+    phLogEl.textContent = `pH: ${currentData.ph}`;
 }
 
-// Listen for changes in the 'iot-data' node
-iotDataRef.on('value', (snapshot) => {
-  // Clear the containers
-  iotDataContainer.innerHTML = '';
-  iotDataRecordsContainer.innerHTML = '';
+function updateChart() {
+    const now = new Date().toLocaleTimeString();
+    dataChart.data.labels.push(now);
+    dataChart.data.datasets[0].data.push(currentData.temp);
 
-  // Get the data
-  const data = snapshot.val();
+    if (dataChart.data.labels.length > 20) {
+        dataChart.data.labels.shift();
+        dataChart.data.datasets[0].data.shift();
+    }
+    dataChart.update();
+}
 
-  // Loop through the data and create a card for each sensor
-  for (const sensorId in data) {
-    const sensor = data[sensorId];
-    iotDataContainer.appendChild(createSensorCard(sensor));
-    iotDataRecordsContainer.appendChild(createSensorCard(sensor));
-  }
-});
+function runAI() {
+    const optimalConditions = {
+        temp: { min: 20, max: 28 },
+        moisture: { min: 50, max: 70 },
+        ph: { min: 6.0, max: 6.8 }
+    };
+
+    let alertMessage = 'SYSTEMS NOMINAL';
+    let conditionsMet = true;
+
+    if (currentData.temp < optimalConditions.temp.min || currentData.temp > optimalConditions.temp.max) {
+        alertMessage = '!! CRITICAL TEMPERATURE ALERT !!';
+        conditionsMet = false;
+    }
+    if (currentData.moisture < optimalConditions.moisture.min || currentData.moisture > optimalConditions.moisture.max) {
+        alertMessage = '!! SOIL MOISTURE ALERT !!';
+        conditionsMet = false;
+    }
+    if (currentData.ph < optimalConditions.ph.min || currentData.ph > optimalConditions.ph.max) {
+        alertMessage = '!! pH LEVEL ALERT !!';
+        conditionsMet = false;
+    }
+
+    alertEl.textContent = alertMessage;
+    if (conditionsMet) {
+        alertEl.classList.remove('alert-active');
+        growthScore++;
+    } else {
+        alertEl.classList.add('alert-active');
+    }
+
+    growthScoreEl.textContent = growthScore;
+    updatePlantVisual();
+}
+
+function updatePlantVisual() {
+    const stages = plantGrowthStages[currentPlantType];
+    const stageIndex = Math.min(Math.floor(growthScore / 10), stages.length - 1);
+    plantImageEl.src = stages[stageIndex];
+}
+
+// Initial call to set the scene
+updatePlantVisual();

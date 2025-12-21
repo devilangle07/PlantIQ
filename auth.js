@@ -1,36 +1,54 @@
-
-// Firebase Authentication
-const auth = firebase.auth();
-
-// TODO: Implement login and sign-up functionality
-
-// Example: Sign up new users
-function signUp(email, password) {
-    auth.createUserWithEmailAndPassword(email, password)
-        .then((userCredential) => {
-            // Signed in 
-            var user = userCredential.user;
-            console.log("New user created:", user.email);
-            // TODO: Store user data in a separate database
-        })
-        .catch((error) => {
-            var errorCode = error.code;
-            var errorMessage = error.message;
-            console.error(errorCode, errorMessage);
-        });
+function showSignUp() {
+    document.getElementById('login-form').style.display = 'none';
+    document.getElementById('signup-form').style.display = 'block';
 }
 
-// Example: Sign in existing users
-function signIn(email, password) {
-    auth.signInWithEmailAndPassword(email, password)
-        .then((userCredential) => {
-            // Signed in 
-            var user = userCredential.user;
-            console.log("User signed in:", user.email);
-        })
-        .catch((error) => {
-            var errorCode = error.code;
-            var errorMessage = error.message;
-            console.error(errorCode, errorMessage);
-        });
+function showLogin() {
+    document.getElementById('signup-form').style.display = 'none';
+    document.getElementById('login-form').style.display = 'block';
 }
+
+function continueAsGuest() {
+    window.location.href = 'index.html';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    // Sign Up
+    const signupBtn = document.getElementById('signup-btn');
+    signupBtn.addEventListener('click', () => {
+        const email = document.getElementById('signup-email').value;
+        const password = document.getElementById('signup-password').value;
+        auth.createUserWithEmailAndPassword(email, password)
+            .then(userCredential => {
+                // Signed in 
+                const user = userCredential.user;
+                // Add user to Firestore
+                db.collection('users').doc(user.uid).set({
+                    email: user.email
+                }).then(() => {
+                    window.location.href = 'index.html';
+                });
+            })
+            .catch(error => {
+                alert(error.message);
+            });
+    });
+
+    // Login
+    const loginBtn = document.getElementById('login-btn');
+    loginBtn.addEventListener('click', () => {
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+        auth.signInWithEmailAndPassword(email, password)
+            .then(userCredential => {
+                // Signed in
+                window.location.href = 'index.html';
+            })
+            .catch(error => {
+                alert(error.message);
+            });
+    });
+});
