@@ -1,93 +1,102 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PlantIQ - Royal Gardens</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;700&display=swap">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>PlantIQ - A New Age Garden</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.lordicon.com/lordicon.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    <script src="firebase-config.js"></script>
-    <script>
-        firebase.auth().onAuthStateChanged(user => {
-            if (!user && window.location.pathname !== '/auth.html') {
-                window.location.href = 'auth.html';
-            }
-        });
-    </script>
-
-    <button class="openbtn" onclick="openNav()">&#9776;</button>
-    <img src="https://i.imgur.com/8xR2Al7.png" alt="PlantIQ Logo" class="header-logo">
-
-    <div id="mySidepanel" class="side-panel">
-        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-        <div class="tab">
-            <button class="tablinks" onclick="openTab(event, 'Dashboard')">Dashboard</button>
-            <button class="tablinks" onclick="openTab(event, 'Records')">Records</button>
-            <button class="tablinks" onclick="openTab(event, 'Profile')">Profile</button>
-            <button class="tablinks" onclick="openTab(event, 'Achievements')">Achievements</button>
-            <button class="tablinks" onclick="openTab(event, 'Journal')">Plant Journal</button>
-            <button class="tablinks" onclick="openTab(event, 'Settings')">Settings</button>
-        </div>
+    <div class="header">
+        <h1>PlantIQ</h1>
     </div>
 
-    <div id="main-content">
-        <div class="header">
-            <h1>PlantIQ</h1>
+    <div class="container">
+
+        <!-- Plant Visualization -->
+        <div class="card">
+            <h2>AI Plant Status</h2>
+            <div id="plant-visualization">
+                <img id="plant-image" src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/A_small_plant_in_a_pot.jpg/220px-A_small_plant_in_a_pot.jpg" alt="AI Plant Visualization">
+                <p>Growth Score: <span id="growth-score">0</span></p>
+                <div id="smart-alerts">SYSTEMS NOMINAL</div>
+            </div>
         </div>
 
-        <div class="grid-container">
-
-            <div id="plant-ai-container" class="grid-item full-width">
-                <h2>AI PLANT VISUALIZATION</h2>
-                <div id="smart-alerts">SYSTEMS NOMINAL</div>
-                <img id="plant-image" src="https://i.imgur.com/8z83Y7c.png" alt="Plant Stage">
-                <p>Growth Score: <span id="growth-score">0</span></p>
-            </div>
-
-            <div id="controls" class="grid-item">
-                <h2>SYSTEM CONTROLS</h2>
+        <!-- System Controls -->
+        <div class="card">
+            <h2>System Controls</h2>
+            <div class="controls-grid">
                 <select id="plant-type-selector">
                     <option value="tree">Plant Type: Tree</option>
                     <option value="shrub">Plant Type: Shrub</option>
                 </select>
-                <button id="water-button">MANUAL WATERING</button>
-                <button id="light-button">TOGGLE GROW LIGHTS</button>
+                <button id="water-button" class="control-button">
+                    <lord-icon src="https://cdn.lordicon.com/vfczflna.json" trigger="hover" colors="primary:#6c63ff,secondary:#e0e5ec"></lord-icon>
+                    Water Plant
+                </button>
+                <button id="light-button" class="control-button">
+                    <lord-icon src="https://cdn.lordicon.com/flviszok.json" trigger="hover" colors="primary:#6c63ff,secondary:#e0e5ec"></lord-icon>
+                    Toggle Light
+                </button>
+                <button id="simulate-data-button" class="control-button">
+                    Simulate Good Data
+                </button>
             </div>
-
-            <div id="data-logs" class="grid-item">
-                <h2>LIVE DATA LOGS</h2>
-                <p id="temp-log">TEMP: --</p>
-                <p id="moisture-log">MOIST: --</p>
-                <p id="ph-log">pH: --</p>
-            </div>
-
-            <div class="grid-item full-width">
-                <h2>Temperature (°C)</h2>
-                <canvas id="data-chart"></canvas>
-            </div>
-
         </div>
+
+        <!-- Weather Forecast -->
+        <div class="card">
+            <h2>Weather Forecast</h2>
+            <div id="weather-forecast">
+                <lord-icon id="weather-icon" src="https://cdn.lordicon.com/jpdtnwas.json" trigger="loop" colors="primary:#6c63ff,secondary:#e0e5ec"></lord-icon>
+                <div id="temperature">--°C</div>
+                <div id="weather-description">Loading...</div>
+            </div>
+        </div>
+
+        <!-- Live Data Logs -->
+        <div class="card">
+            <h2>Live Sensor Data</h2>
+            <div id="data-logs">
+                <p id="temp-log"><lord-icon src="https://cdn.lordicon.com/whtfgdfv.json" trigger="loop" colors="primary:#6c63ff"></lord-icon> <strong>TEMP:</strong> --</p>
+                <p id="moisture-log"><lord-icon src="https://cdn.lordicon.com/uqpazftn.json" trigger="loop" colors="primary:#6c63ff"></lord-icon> <strong>MOIST:</strong> --</p>
+                <p id="ph-log"><lord-icon src="https://cdn.lordicon.com/vasbqwms.json" trigger="loop" colors="primary:#6c63ff"></lord-icon> <strong>pH:</strong> --</p>
+            </div>
+        </div>
+
+        <!-- Weather Book -->
+        <div class="card">
+            <h2>Weather Logbook</h2>
+            <div id="weather-book">
+                <ul id="weather-log-list">
+                    <li>No weather data logged yet.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Data Chart -->
+        <div class="card" style="grid-column: 1 / -1;">
+            <h2>Live Data Chart</h2>
+            <canvas id="data-chart"></canvas>
+        </div>
+
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="firebase-config.js"></script>
     <script src="database.js"></script>
     <script>
-        function openNav() {
-            document.getElementById("mySidepanel").style.width = "250px";
-        }
-
-        function closeNav() {
-            document.getElementById("mySidepanel").style.width = "0";
-        }
-        
-        function openTab(evt, tabName) {
-            window.location.href = tabName.toLowerCase() + '.html';
-        }
+        document.querySelectorAll('.control-button').forEach(button => {
+            button.addEventListener('mousedown', () => button.classList.add('pressed'));
+            button.addEventListener('mouseup', () => button.classList.remove('pressed'));
+            button.addEventListener('mouseleave', () => button.classList.remove('pressed'));
+        });
 
         document.getElementById('water-button').addEventListener('click', () => {
             console.log('Manual watering initiated.');
@@ -95,6 +104,16 @@
 
         document.getElementById('light-button').addEventListener('click', () => {
             console.log('Grow lights toggled.');
+        });
+
+        document.getElementById('simulate-data-button').addEventListener('click', () => {
+            console.log('Simulating good data...');
+            const database = firebase.database();
+            database.ref('iot-data').set({
+                temperature: { value: 25 },
+                moisture: { value: 60 },
+                ph: { value: 6.5 }
+            });
         });
     </script>
 </body>

@@ -33,7 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             })
             .catch(error => {
-                alert(error.message);
+                console.error("Sign up error:", error);
+                alert("Error signing up: " + error.message);
             });
     });
 
@@ -48,7 +49,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.location.href = 'index.html';
             })
             .catch(error => {
-                alert(error.message);
+                console.error("Login error:", error);
+                alert("Error logging in: " + error.message);
             });
     });
 });

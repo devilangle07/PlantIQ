@@ -1,31 +1,20 @@
-const firebaseConfig = {
-    apiKey: "API_KEY",
-    authDomain: "PROJECT_ID.firebaseapp.com",
-    databaseURL: "https://PROJECT_ID.firebaseio.com",
-    projectId: "PROJECT_ID",
-    storageBucket: "PROJECT_ID.appspot.com",
-    messagingSenderId: "SENDER_ID",
-    appId: "APP_ID",
-  };
-
-firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 const iotDataRef = database.ref('iot-data');
 
 // --- Plant Growth Images ---
 const plantGrowthStages = {
     tree: [
-        "https://i.imgur.com/8z83Y7c.png",
-        "https://i.imgur.com/0I04Tz6.png",
-        "https://i.imgur.com/2oV3o7c.png",
-        "https://i.imgur.com/2OKL7Jg.png",
-        "https://i.imgur.com/Z5gJ1p0.png"
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/A_small_plant_in_a_pot.jpg/220px-A_small_plant_in_a_pot.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/A_small_plant_in_a_pot.jpg/220px-A_small_plant_in_a_pot.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/A_young_plant_in_a_pot.jpg/220px-A_young_plant_in_a_pot.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/A_plant_in_a_pot.jpg/220px-A_plant_in_a_pot.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/A_flowering_plant_in_a_pot.jpg/220px-A_flowering_plant_in_a_pot.jpg"
     ],
     shrub: [
-        "https://i.imgur.com/8z83Y7c.png",
-        "https://i.imgur.com/0I04Tz6.png",
-        "https://i.imgur.com/v8Na3y9.png",
-        "https://i.imgur.com/Uo2wS4c.png",
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/A_small_plant_in_a_pot.jpg/220px-A_small_plant_in_a_pot.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/A_small_plant_in_a_pot.jpg/220px-A_small_plant_in_a_pot.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/A_small_shrub_in_a_pot.jpg/220px-A_small_shrub_in_a_pot.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/A_flowering_shrub_in_a_pot.jpg/220px-A_flowering_shrub_in_a_pot.jpg",
     ]
 };
 
