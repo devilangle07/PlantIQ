@@ -69,11 +69,12 @@ body {
     text-align: center;
 }
 
-#plant-image {
-    max-width: 180px;
-    height: auto;
-    margin: 1rem 0;
+#plant-animation {
+    margin: 1rem auto;
+    width: 200px;
+    height: 200px;
 }
+
 
 .controls-grid {
     display: grid;

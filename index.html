@@ -20,11 +20,8 @@
         <!-- Plant Visualization -->
         <div class="card">
             <h2>AI Plant Status</h2>
-            <div id="plant-visualization">
-                <img id="plant-image" src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/A_small_plant_in_a_pot.jpg/220px-A_small_plant_in_a_pot.jpg" alt="AI Plant Visualization">
-                <p>Growth Score: <span id="growth-score">0</span></p>
-                <div id="smart-alerts">SYSTEMS NOMINAL</div>
-            </div>
+            <div id="plant-container"></div>
+            <button id="simulate-data-btn">Create & Simulate Plant Data</button>
         </div>
 
         <!-- System Controls -->
@@ -87,34 +84,6 @@
 
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src="firebase-config.js"></script>
-    <script src="database.js"></script>
-    <script>
-        document.querySelectorAll('.control-button').forEach(button => {
-            button.addEventListener('mousedown', () => button.classList.add('pressed'));
-            button.addEventListener('mouseup', () => button.classList.remove('pressed'));
-            button.addEventListener('mouseleave', () => button.classList.remove('pressed'));
-        });
-
-        document.getElementById('water-button').addEventListener('click', () => {
-            console.log('Manual watering initiated.');
-        });
-
-        document.getElementById('light-button').addEventListener('click', () => {
-            console.log('Grow lights toggled.');
-        });
-
-        document.getElementById('simulate-data-button').addEventListener('click', () => {
-            console.log('Simulating good data...');
-            const database = firebase.database();
-            database.ref('iot-data').set({
-                temperature: { value: 25 },
-                moisture: { value: 60 },
-                ph: { value: 6.5 }
-            });
-        });
-    </script>
+    <script type="module" src="main.js"></script>
 </body>
 </html>
